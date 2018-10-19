@@ -6,14 +6,24 @@ import csv
 
 
 class QuotesSpider(scrapy.Spider):
-    name = "onePersonGames"
+    name = "one-person-all-game"
 
     def start_requests(self):
-        urls = [
-            'http://www.op.gg/summoner/userName=deadhard'
-        ]
-        for url in urls:
-            yield scrapy.Request(url=url, callback=self.parse)
+        filename = 'E:\explore\scrapy\lol-getdatas\\tutorial\personstest.csv'
+        with open(filename) as f:
+            reader = csv.reader(f)
+            head_row = next(reader)
+            for row in reader:
+                yield scrapy.Request(url='http://' + row[0][2:], callback=self.parse)
+
+        #         # 行号从2开始
+        #         print(reader.line_num, row)
+        #     print(list(reader))
+        # urls = [
+        #     'http://www.op.gg/summoner/userName=deadhard'
+        # ]
+        # for url in urls:
+        #     yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
         moreBaseUrl = 'http://www.op.gg/summoner/matches/ajax/averageAndList/startInfo='
@@ -31,7 +41,7 @@ class QuotesSpider(scrapy.Spider):
         #     }
         for quote in response.css('div.GameItemWrap'):
             yield {
-                'gametype': quote.css('div.GameType::text').extract_first().replace('\n','').replace('\t',''),
+                'gametype': quote.css('div.GameType::text').extract_first().replace('\n', '').replace('\t', ''),
                 'summonerid': quote.css('div.GameItem::attr(data-summoner-id)').extract_first(),
                 'gametime': quote.css('div.GameItem::attr(data-game-time)').extract_first(),
                 'gameid': quote.css('div.GameItem::attr(data-game-id)').extract()
@@ -49,7 +59,7 @@ class QuotesSpider(scrapy.Spider):
         jsonresponse = json.loads(response.body_as_unicode())
         last_info = jsonresponse["lastInfo"]
 
-        html = jsonresponse["html"].replace('\n\t','').replace('\t','')
+        html = jsonresponse["html"].replace('\n\t', '').replace('\t', '')
         gametype = re.findall("class=\"GameType\">(.+?)<", html)
         summoner_ids = re.findall("data-summoner-id=\"(.+?)\"", html)
         game_ids = re.findall("data-game-id=\"(.+?)\"", html)
