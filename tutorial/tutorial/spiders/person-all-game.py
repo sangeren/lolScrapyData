@@ -6,7 +6,7 @@ import csv
 
 
 class QuotesSpider(scrapy.Spider):
-    name = "one-person-all-game"
+    name = "person-all-game"
 
     def start_requests(self):
         filename = 'E:\explore\scrapy\lol-getdatas\\tutorial\personstest.csv'

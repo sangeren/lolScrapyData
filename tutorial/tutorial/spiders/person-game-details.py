@@ -3,10 +3,10 @@ import scrapy
 import csv
 
 class OneGamepider(scrapy.Spider):
-    name = "person-game"
+    name = "person-game-details"
 
     def start_requests(self):
-        filename = 'E:\explore\scrapy\lol-getdatas\\tutorial\onepersonallgame.csv'
+        filename = 'E:\explore\scrapy\lol-getdatas\\tutorial\personallgame10.csv'
         with open(filename) as f:
             reader = csv.reader(f)
             head_row = next(reader)
@@ -17,6 +17,7 @@ class OneGamepider(scrapy.Spider):
     def parse(self, response):
         yield {
             'one': response.css('table.GameDetailTable th[colspan="4"]::text').extract()[1].replace('\n\t', '').replace('\t', ''),
+            'result': response.css('table.GameDetailTable th[colspan="4"]>span::text').extract()[1].replace('\n\t', '').replace('\t', ''),
             'two': response.css('table.GameDetailTable th[colspan="4"]::text').extract()[3].replace('\n\t', '').replace('\t', ''),
             'oneTeam':  response.css('div.__spc32::text').extract()[0:5],
             'twoTeam': response.css('div.__spc32::text').extract()[5:10],
